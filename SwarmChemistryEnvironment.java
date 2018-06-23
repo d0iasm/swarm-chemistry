@@ -60,16 +60,35 @@ public class SwarmChemistryEnvironment implements ActionListener {
     double pointMutationRatePerParameter = 0.1;
     double pointMutationMagnitude = 0.5;
 
+    /*
+     * A constructor for passing recipe text as an argument.
+     *
+     * @param app the boolean that this is applet or not
+     * @param recipeText recipe
+     */
     public SwarmChemistryEnvironment(boolean app, String recipeText) {
         this(app, 1, true, recipeText);
     }
 
+    /*
+     * A constructor for passing the number of a window.
+     *
+     * @param app the boolean that this is applet or not
+     * @param num the number of windows
+     */
     public SwarmChemistryEnvironment(boolean app, int num) {
         this(app, num, false, "");
     }
 
+    /*
+     * A constructor that has full arguments.
+     *
+     * @param app the boolean that this is applet or not
+     * @param recipeText recipe
+     * @param given
+     * @param num the number of windows
+     */
     public SwarmChemistryEnvironment(boolean app, int num, boolean given, String recipeText) {
-
         thisIsApplet = app;
         recipeFrames = Collections.synchronizedList(new ArrayList<RecipeFrame>());
 
@@ -93,6 +112,10 @@ public class SwarmChemistryEnvironment implements ActionListener {
         }
     }
 
+    /*
+     * Simulator for each swarm population.
+     * This method is called all the time while application is running.
+     */
     public void simulatePopulations() {
         SwarmPopulationSimulator tempFrame;
 
@@ -125,6 +148,7 @@ public class SwarmChemistryEnvironment implements ActionListener {
                     selectedFrame[howManySelected] = tempFrame;
                     howManySelected++;
                 } else if (!tempFrame.isSelected && !tempFrame.notYetNoticed) {
+                    // TODO: check this statement is correct && ? || ?
                     tempFrame.notYetNoticed = true;
                     howManySelected--;
                 }
@@ -141,6 +165,10 @@ public class SwarmChemistryEnvironment implements ActionListener {
         }
     }
 
+    /*
+     * Generate a new frame depends on request.
+     * This method is called all the time while application is running.
+     */
     public void generateNewFrames() {
         SwarmPopulation tempPopulation;
 
@@ -168,12 +196,10 @@ public class SwarmChemistryEnvironment implements ActionListener {
             boolean mutated = false;
 
             // Obtain a recipe from population
-
             Recipe tempRecipe = new Recipe(frameToMutate.population.population);
             int numberOfIngredients = tempRecipe.parameters.size();
 
             // Insertions, duplications and deletions
-
             for (int j = 0; j < numberOfIngredients; j++) {
                 if (Math.random() < duplicationOrDeletionRatePerParameterSets) {
                     if (Math.random() < .5) { // Duplication
@@ -201,7 +227,6 @@ public class SwarmChemistryEnvironment implements ActionListener {
             }
 
             // Then Point Mutations
-
             SwarmParameters tempParam;
 
             for (int j = 0; j < numberOfIngredients; j++) {
@@ -239,8 +264,20 @@ public class SwarmChemistryEnvironment implements ActionListener {
         }
     }
 
+    /*
+     * Calucurate area overlapping between two frames.
+     *
+     * @param x1 the position of first frame
+     * @param y1 the position of first frame
+     * @param w1 the width of first frame
+     * @param h1 the height of first frame
+     * @param x2 the position of second frame
+     * @param y2 the position of second frame
+     * @param w2 the width of second frame
+     * @param h2 the height of second frame
+     * @return an area
+     */
     public int overlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
-
         int overlapX = Math.max(Math.min(x1 + w1 - 1, x2 + w2 - 1) - Math.max(x1, x2), 0);
         int overlapY = Math.max(Math.min(y1 + h1 - 1, y2 + h2 - 1) - Math.max(y1, y2), 0);
 
@@ -248,6 +285,10 @@ public class SwarmChemistryEnvironment implements ActionListener {
     }
 
 
+    /*
+     * Move all frames.
+     * This method is called all the time while application is running.
+     */
     public void simulateMotionOfFrames() {
         SwarmPopulationSimulator tempFrame, tempFrame2;
         Dimension simulatorDimension;
@@ -265,7 +306,6 @@ public class SwarmChemistryEnvironment implements ActionListener {
         for (int i = 0; i < numberOfFrames; i++) {
             tempFrame = frames.get(i);
             if (tempFrame.getExtendedState() == JFrame.NORMAL) {
-
                 tempPoint = tempFrame.getLocation();
                 x1 = ox1 = tempPoint.x;
                 y1 = oy1 = tempPoint.y;
@@ -280,7 +320,6 @@ public class SwarmChemistryEnvironment implements ActionListener {
                     if (i != j) {
                         tempFrame2 = frames.get(j);
                         if (tempFrame2.getExtendedState() == JFrame.NORMAL) {
-
                             tempPoint = tempFrame2.getLocation();
                             x2 = tempPoint.x;
                             y2 = tempPoint.y;
@@ -302,7 +341,6 @@ public class SwarmChemistryEnvironment implements ActionListener {
 
                             dx += (cx1 - cx2) * ov / (w1 * h1 * 2);
                             dy += (cy1 - cy2) * ov / (w1 * h1 * 2);
-
                         }
                     }
                 }
@@ -346,6 +384,9 @@ public class SwarmChemistryEnvironment implements ActionListener {
         }
     }
 
+    /*
+     * Close this application.
+     */
     public void closeApplet() {
         for (int i = 0; i < numberOfFrames; i++) {
             frames.get(i).dispose();
@@ -362,6 +403,9 @@ public class SwarmChemistryEnvironment implements ActionListener {
         System.gc();
     }
 
+    /*
+     * A constructor for a control frame to add buttons and events.
+     */
     public void constructControlFrame() {
         controlFrame = new JFrame("Swarm Chemistry Simulator");
         controlFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -401,8 +445,10 @@ public class SwarmChemistryEnvironment implements ActionListener {
         totalScreenArea = (screenDimension.width - screenInsets.left - screenInsets.right) * (screenDimension.height - screenInsets.top - screenInsets.bottom) - controlFrameDimension.width * controlFrameDimension.height;
     }
 
+    /*
+     * Add a swarm population frame.
+     */
     public void addFrame(SwarmPopulation pop, int x, int y) {
-
         numberOfFrames++;
 
         populations.add(pop);
@@ -412,7 +458,11 @@ public class SwarmChemistryEnvironment implements ActionListener {
         frames.add(tempFrame);
     }
 
-
+    /*
+     * A constructor for swarm population frames.
+     *
+     * @param num the number of swarm population and swarm population frames
+     */
     public void initializePopulations(int num) {
         SwarmPopulation tempPopulation;
 
@@ -420,7 +470,6 @@ public class SwarmChemistryEnvironment implements ActionListener {
         frames = new ArrayList<SwarmPopulationSimulator>();
 
         for (int i = 0; i < num; i++) {
-
             if (givenWithSpecificRecipe) {
                 givenWithSpecificRecipe = false;
                 tempPopulation = new SwarmPopulation((new Recipe(givenRecipeText)).createPopulation(initialSpaceSize, initialSpaceSize), "Created from a given recipe");
