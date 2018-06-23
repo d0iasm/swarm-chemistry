@@ -1,5 +1,5 @@
 # Swarm Chemistry
-Based on [http://bingweb.binghamton.edu/~sayama/SwarmChemistry/](SwarmChemistry-1.2.0-src.tar.gz) created by [http://bingweb.binghamton.edu/~sayama/](Sayama).
+Based on [SwarmChemistry-1.2.0-src.tar.gz](http://bingweb.binghamton.edu/~sayama/SwarmChemistry/]) created by [Sayama](http://bingweb.binghamton.edu/~sayama/).
 
 ## Usage
 
@@ -11,6 +11,6 @@ $ make clean // Remove all class files
 ```
 
 ## References
-- [http://bingweb.binghamton.edu/~sayama/SwarmChemistry/](Swarm Chemistry Homepage)
+- [Swarm Chemistry Homepage](http://bingweb.binghamton.edu/~sayama/SwarmChemistry/)
 - [個体の群れ，群ロボット](http://www.cmplx.riec.tohoku.ac.jp/jp/projects/project/swarm_oscillators/)
 
