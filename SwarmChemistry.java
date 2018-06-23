@@ -26,7 +26,6 @@ public class SwarmChemistry extends Applet {
      * Because browser or applet viewer has started already.
      */
     public static void main(String args[]) {
-        // An applet does not need a main function because browser or applet viewer has started already.
         boolean recipeIsGiven = false;
         int n = 6;
         SwarmChemistryEnvironment master;

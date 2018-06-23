@@ -61,413 +61,413 @@ public class SwarmChemistryEnvironment implements ActionListener {
     double pointMutationMagnitude = 0.5;
 
     public SwarmChemistryEnvironment(boolean app, String recipeText) {
-	this(app, 1, true, recipeText);
+        this(app, 1, true, recipeText);
     }
 
     public SwarmChemistryEnvironment(boolean app, int num) {
-	this(app, num, false, "");
+        this(app, num, false, "");
     }
 
     public SwarmChemistryEnvironment(boolean app, int num, boolean given, String recipeText) {
 
-	thisIsApplet = app;
-	recipeFrames = Collections.synchronizedList(new ArrayList<RecipeFrame>());
+        thisIsApplet = app;
+        recipeFrames = Collections.synchronizedList(new ArrayList<RecipeFrame>());
 
-	numberOfFrames = 0;
-	givenWithSpecificRecipe = given;
-	givenRecipeText = recipeText;
+        numberOfFrames = 0;
+        givenWithSpecificRecipe = given;
+        givenRecipeText = recipeText;
 
-	constructControlFrame();
-	initializePopulations(num);
+        constructControlFrame();
+        initializePopulations(num);
 
-	applicationRunning = true;
-	howManySelected = 0;
-	randomAdditionRequest = mutationRequest = replicationRequest = false;
-	previousTime = System.currentTimeMillis();
+        applicationRunning = true;
+        howManySelected = 0;
+        randomAdditionRequest = mutationRequest = replicationRequest = false;
+        previousTime = System.currentTimeMillis();
 
-	while (applicationRunning) {
-	    int tfs = targetFrameSize;
-	    simulatePopulations();
-	    generateNewFrames();
-	    simulateMotionOfFrames();
-	}
+        while (applicationRunning) {
+            int tfs = targetFrameSize;
+            simulatePopulations();
+            generateNewFrames();
+            simulateMotionOfFrames();
+        }
     }
 
     public void simulatePopulations() {
-	SwarmPopulationSimulator tempFrame;
+        SwarmPopulationSimulator tempFrame;
 
-	currentTime = System.currentTimeMillis();
-	if (currentTime - previousTime > milliSecPerFrame) previousTime = currentTime;
+        currentTime = System.currentTimeMillis();
+        if (currentTime - previousTime > milliSecPerFrame) previousTime = currentTime;
 
-	for (int i = 0; i < numberOfFrames; i ++) {
-	    tempFrame = frames.get(i);
+        for (int i = 0; i < numberOfFrames; i++) {
+            tempFrame = frames.get(i);
 
-	    if (tempFrame.isDisplayable()) {
-		if (currentTime == previousTime) {
-		    if (!pausing.isSelected()) {
-			tempFrame.simulateSwarmBehavior();
-			tempFrame.updateStates();
-		    }
-		    tempFrame.displayStates();
-		}
-		if (tempFrame.isToMutate) {
-		    tempFrame.isToMutate = false;
-		    frameToMutate = tempFrame;
-		    mutationRequest = true;
-		}
-		if (tempFrame.isToReplicate) {
-		    tempFrame.isToReplicate = false;
-		    frameToReplicate = tempFrame;
-		    replicationRequest = true;
-		}
-		if (tempFrame.isSelected && tempFrame.notYetNoticed) {
-		    tempFrame.notYetNoticed = false;
-		    selectedFrame[howManySelected] = tempFrame;
-		    howManySelected ++;
-		}
-		else if (!tempFrame.isSelected && !tempFrame.notYetNoticed) {
-		    tempFrame.notYetNoticed = true;
-		    howManySelected --;
-		}
-	    }
-	    else {
-		if (tempFrame.isSelected && !tempFrame.notYetNoticed) {
-		    tempFrame.isSelected = false;
-		    tempFrame.notYetNoticed = true;
-		    howManySelected --;
-		}
-		numberOfFrames --;
-		frames.remove(i);
-		i --;
-	    }
-	}
+            if (tempFrame.isDisplayable()) {
+                if (currentTime == previousTime) {
+                    if (!pausing.isSelected()) {
+                        tempFrame.simulateSwarmBehavior();
+                        tempFrame.updateStates();
+                    }
+                    tempFrame.displayStates();
+                }
+                if (tempFrame.isToMutate) {
+                    tempFrame.isToMutate = false;
+                    frameToMutate = tempFrame;
+                    mutationRequest = true;
+                }
+                if (tempFrame.isToReplicate) {
+                    tempFrame.isToReplicate = false;
+                    frameToReplicate = tempFrame;
+                    replicationRequest = true;
+                }
+                if (tempFrame.isSelected && tempFrame.notYetNoticed) {
+                    tempFrame.notYetNoticed = false;
+                    selectedFrame[howManySelected] = tempFrame;
+                    howManySelected++;
+                } else if (!tempFrame.isSelected && !tempFrame.notYetNoticed) {
+                    tempFrame.notYetNoticed = true;
+                    howManySelected--;
+                }
+            } else {
+                if (tempFrame.isSelected && !tempFrame.notYetNoticed) {
+                    tempFrame.isSelected = false;
+                    tempFrame.notYetNoticed = true;
+                    howManySelected--;
+                }
+                numberOfFrames--;
+                frames.remove(i);
+                i--;
+            }
+        }
     }
 
     public void generateNewFrames() {
-	SwarmPopulation tempPopulation;
+        SwarmPopulation tempPopulation;
 
-	if (howManySelected == 2) {
-	    howManySelected = 0;
-	    selectedFrame[0].isSelected = false;
-	    selectedFrame[0].notYetNoticed = true;
-	    selectedFrame[1].isSelected = false;
-	    selectedFrame[1].notYetNoticed = true;
+        if (howManySelected == 2) {
+            howManySelected = 0;
+            selectedFrame[0].isSelected = false;
+            selectedFrame[0].notYetNoticed = true;
+            selectedFrame[1].isSelected = false;
+            selectedFrame[1].notYetNoticed = true;
 
-	    if (selectedFrame[0] == selectedFrame[1]) {
-		// Mutation
-		mutationRequest = true;
-		frameToMutate = selectedFrame[0];
-	    }
-	    else {
-		// Mixing
-		tempPopulation = new SwarmPopulation(selectedFrame[0].population, selectedFrame[1].population, Math.random() * 0.6 + 0.2, initialSpaceSize, initialSpaceSize, "Mixed");
-		addFrame(tempPopulation, (selectedFrame[0].getLocation().x + selectedFrame[1].getLocation().x) / 2, (selectedFrame[0].getLocation().y + selectedFrame[1].getLocation().y) / 2);
-	    }
-	}
+            if (selectedFrame[0] == selectedFrame[1]) {
+                // Mutation
+                mutationRequest = true;
+                frameToMutate = selectedFrame[0];
+            } else {
+                // Mixing
+                tempPopulation = new SwarmPopulation(selectedFrame[0].population, selectedFrame[1].population, Math.random() * 0.6 + 0.2, initialSpaceSize, initialSpaceSize, "Mixed");
+                addFrame(tempPopulation, (selectedFrame[0].getLocation().x + selectedFrame[1].getLocation().x) / 2, (selectedFrame[0].getLocation().y + selectedFrame[1].getLocation().y) / 2);
+            }
+        }
 
-	if (mutationRequest) {
-	    // Mutation
-	    mutationRequest = false;
-	    boolean mutated = false;
+        if (mutationRequest) {
+            // Mutation
+            mutationRequest = false;
+            boolean mutated = false;
 
-	    // Obtain a recipe from population
+            // Obtain a recipe from population
 
-	    Recipe tempRecipe = new Recipe(frameToMutate.population.population);
-	    int numberOfIngredients = tempRecipe.parameters.size();
+            Recipe tempRecipe = new Recipe(frameToMutate.population.population);
+            int numberOfIngredients = tempRecipe.parameters.size();
 
-	    // Insertions, duplications and deletions
+            // Insertions, duplications and deletions
 
-	    for (int j = 0; j < numberOfIngredients; j ++) {
-		if (Math.random() < duplicationOrDeletionRatePerParameterSets) {
-		    if (Math.random() < .5) { // Duplication
-			mutated = true;
-			tempRecipe.parameters.add(j + 1, tempRecipe.parameters.get(j));
-			tempRecipe.popCounts.add(j + 1, tempRecipe.popCounts.get(j));
-			numberOfIngredients ++;
-			j ++;
-		    }
-		    else { // Deletion
-			if (numberOfIngredients > 1) {
-			    mutated = true;
-			    tempRecipe.parameters.remove(j);
-			    tempRecipe.popCounts.remove(j);
-			    numberOfIngredients --;
-			    j --;
-			}
-		    }
-		}
-	    }
+            for (int j = 0; j < numberOfIngredients; j++) {
+                if (Math.random() < duplicationOrDeletionRatePerParameterSets) {
+                    if (Math.random() < .5) { // Duplication
+                        mutated = true;
+                        tempRecipe.parameters.add(j + 1, tempRecipe.parameters.get(j));
+                        tempRecipe.popCounts.add(j + 1, tempRecipe.popCounts.get(j));
+                        numberOfIngredients++;
+                        j++;
+                    } else { // Deletion
+                        if (numberOfIngredients > 1) {
+                            mutated = true;
+                            tempRecipe.parameters.remove(j);
+                            tempRecipe.popCounts.remove(j);
+                            numberOfIngredients--;
+                            j--;
+                        }
+                    }
+                }
+            }
 
-	    if (Math.random() < randomAdditionRatePerRecipe) { // Addition
-		mutated = true;
-		tempRecipe.parameters.add(new SwarmParameters());
-		tempRecipe.popCounts.add(new Integer((int) (Math.random() * SwarmParameters.numberOfIndividualsMax * 0.5) + 1));
-	    }
+            if (Math.random() < randomAdditionRatePerRecipe) { // Addition
+                mutated = true;
+                tempRecipe.parameters.add(new SwarmParameters());
+                tempRecipe.popCounts.add(new Integer((int) (Math.random() * SwarmParameters.numberOfIndividualsMax * 0.5) + 1));
+            }
 
-	    // Then Point Mutations
+            // Then Point Mutations
 
-	    SwarmParameters tempParam;
+            SwarmParameters tempParam;
 
-	    for (int j = 0; j < numberOfIngredients; j ++) {
-		tempParam = new SwarmParameters(tempRecipe.parameters.get(j));
-		tempParam.inducePointMutations(
-					       pointMutationRatePerParameter,
-					       pointMutationMagnitude
-					       );
-		if (!tempRecipe.parameters.get(j).equals(tempParam)) {
-		    mutated = true;
-		    tempRecipe.parameters.set(j, tempParam);
-		}
-	    }
+            for (int j = 0; j < numberOfIngredients; j++) {
+                tempParam = new SwarmParameters(tempRecipe.parameters.get(j));
+                tempParam.inducePointMutations(
+                        pointMutationRatePerParameter,
+                        pointMutationMagnitude
+                );
+                if (!tempRecipe.parameters.get(j).equals(tempParam)) {
+                    mutated = true;
+                    tempRecipe.parameters.set(j, tempParam);
+                }
+            }
 
-	    tempRecipe.boundPopulationSize();
-	    if (mutated) addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Mutated"), frameToMutate.getLocation().x + 30, frameToMutate.getLocation().y + 30);
-	    else addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Mutation failed"), frameToMutate.getLocation().x + 30, frameToMutate.getLocation().y + 30);
-	}
+            tempRecipe.boundPopulationSize();
+            if (mutated)
+                addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Mutated"), frameToMutate.getLocation().x + 30, frameToMutate.getLocation().y + 30);
+            else
+                addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Mutation failed"), frameToMutate.getLocation().x + 30, frameToMutate.getLocation().y + 30);
+        }
 
-	if (randomAdditionRequest) {
-	    randomAdditionRequest = false;
-	    tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
-	    addFrame(tempPopulation, 
-		     (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
-		     (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
-	}
+        if (randomAdditionRequest) {
+            randomAdditionRequest = false;
+            tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
+            addFrame(tempPopulation,
+                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
+                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
+        }
 
-	if (replicationRequest) {
-	    replicationRequest = false;
+        if (replicationRequest) {
+            replicationRequest = false;
 
-	    Recipe tempRecipe = new Recipe(frameToReplicate.population.population);
-	    addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Replicated"), frameToReplicate.getLocation().x + 30, frameToReplicate.getLocation().y + 30);
-	}
+            Recipe tempRecipe = new Recipe(frameToReplicate.population.population);
+            addFrame(new SwarmPopulation(tempRecipe.createPopulation(targetFrameSize, targetFrameSize), "Replicated"), frameToReplicate.getLocation().x + 30, frameToReplicate.getLocation().y + 30);
+        }
     }
 
     public int overlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) {
-	
-	int overlapX = Math.max(Math.min(x1 + w1 - 1, x2 + w2 - 1) - Math.max(x1, x2), 0);
-	int overlapY = Math.max(Math.min(y1 + h1 - 1, y2 + h2 - 1) - Math.max(y1, y2), 0);
 
-	return overlapX * overlapY;
+        int overlapX = Math.max(Math.min(x1 + w1 - 1, x2 + w2 - 1) - Math.max(x1, x2), 0);
+        int overlapY = Math.max(Math.min(y1 + h1 - 1, y2 + h2 - 1) - Math.max(y1, y2), 0);
+
+        return overlapX * overlapY;
     }
 
 
     public void simulateMotionOfFrames() {
-	SwarmPopulationSimulator tempFrame, tempFrame2;
-	Dimension simulatorDimension;
+        SwarmPopulationSimulator tempFrame, tempFrame2;
+        Dimension simulatorDimension;
 
-	if (numberOfFrames == 0) return;
+        if (numberOfFrames == 0) return;
 
-	simulatorDimension = frames.get(0).getSize();
+        simulatorDimension = frames.get(0).getSize();
 
-	int totalFrameArea = 0;
+        int totalFrameArea = 0;
 
-	int dx, dy, x1, y1, ox1, oy1, x2, y2, w1, h1, w2, h2, ov, cx1, cy1, cx2, cy2;
-	Point tempPoint;
-	Dimension tempDimension;
+        int dx, dy, x1, y1, ox1, oy1, x2, y2, w1, h1, w2, h2, ov, cx1, cy1, cx2, cy2;
+        Point tempPoint;
+        Dimension tempDimension;
 
-	for (int i = 0; i < numberOfFrames; i ++) {
-	    tempFrame = frames.get(i);
-	    if (tempFrame.getExtendedState() == JFrame.NORMAL) {
+        for (int i = 0; i < numberOfFrames; i++) {
+            tempFrame = frames.get(i);
+            if (tempFrame.getExtendedState() == JFrame.NORMAL) {
 
-		tempPoint = tempFrame.getLocation();
-		x1 = ox1 = tempPoint.x;
-		y1 = oy1 = tempPoint.y;
-		tempDimension = tempFrame.getSize();
-		w1 = tempDimension.width;
-		h1 = tempDimension.height;
-		totalFrameArea += w1 * h1;
+                tempPoint = tempFrame.getLocation();
+                x1 = ox1 = tempPoint.x;
+                y1 = oy1 = tempPoint.y;
+                tempDimension = tempFrame.getSize();
+                w1 = tempDimension.width;
+                h1 = tempDimension.height;
+                totalFrameArea += w1 * h1;
 
-		dx = dy = 0;
+                dx = dy = 0;
 
-		for (int j = 0; j < numberOfFrames; j ++) {
-		    if (i != j) {
-			tempFrame2 = frames.get(j);
-			if (tempFrame2.getExtendedState() == JFrame.NORMAL) {
+                for (int j = 0; j < numberOfFrames; j++) {
+                    if (i != j) {
+                        tempFrame2 = frames.get(j);
+                        if (tempFrame2.getExtendedState() == JFrame.NORMAL) {
 
-			    tempPoint = tempFrame2.getLocation();
-			    x2 = tempPoint.x;
-			    y2 = tempPoint.y;
-			    tempDimension = tempFrame2.getSize();
-			    w2 = tempDimension.width;
-			    h2 = tempDimension.height;
+                            tempPoint = tempFrame2.getLocation();
+                            x2 = tempPoint.x;
+                            y2 = tempPoint.y;
+                            tempDimension = tempFrame2.getSize();
+                            w2 = tempDimension.width;
+                            h2 = tempDimension.height;
 
-			    ov = overlap(x1, y1, w1, h1, x2, y2, w2, h2);
+                            ov = overlap(x1, y1, w1, h1, x2, y2, w2, h2);
 
-			    cx1 = x1 + w1 / 2;
-			    cy1 = y1 + h1 / 2;
-			    cx2 = x2 + w2 / 2;
-			    cy2 = y2 + h2 / 2;
+                            cx1 = x1 + w1 / 2;
+                            cy1 = y1 + h1 / 2;
+                            cx2 = x2 + w2 / 2;
+                            cy2 = y2 + h2 / 2;
 
-			    if (cx1 == cx2 && cy1 == cy2) {
-				cx2 ++;
-				cy2 ++;
-			    }
+                            if (cx1 == cx2 && cy1 == cy2) {
+                                cx2++;
+                                cy2++;
+                            }
 
-			    dx += (cx1 - cx2) * ov / (w1 * h1 * 2);
-			    dy += (cy1 - cy2) * ov / (w1 * h1 * 2);
+                            dx += (cx1 - cx2) * ov / (w1 * h1 * 2);
+                            dy += (cy1 - cy2) * ov / (w1 * h1 * 2);
 
-			}
-		    }
-		}
-		
-		x1 += dx;
-		if (x1 < screenInsets.left) x1 = screenInsets.left;
-		if (x1 > screenDimension.width - screenInsets.right - w1) x1 = screenDimension.width - screenInsets.right - w1;
+                        }
+                    }
+                }
 
-		y1 += dy;
-		if (y1 < screenInsets.top + controlFrameDimension.height) y1 = screenInsets.top + controlFrameDimension.height;
-		if (y1 > screenDimension.height - screenInsets.bottom - h1) y1 = screenDimension.height - screenInsets.bottom - h1;
+                x1 += dx;
+                if (x1 < screenInsets.left) x1 = screenInsets.left;
+                if (x1 > screenDimension.width - screenInsets.right - w1)
+                    x1 = screenDimension.width - screenInsets.right - w1;
 
-		if ((dx != 0 || dy != 0) && x1 == ox1 && y1 == oy1) {
-		    x1 += Math.random() > 0.5 ? -1 : 1;
-		    y1 += Math.random() > 0.5 ? -1 : 1;
-		    if (x1 < screenInsets.left) x1 = screenInsets.left;
-		    if (x1 > screenDimension.width - screenInsets.right - w1) x1 = screenDimension.width - screenInsets.right - w1;
-		    if (y1 < screenInsets.top + controlFrameDimension.height) y1 = screenInsets.top + controlFrameDimension.height;
-		    if (y1 > screenDimension.height - screenInsets.bottom - h1) y1 = screenDimension.height - screenInsets.bottom - h1;
-		}
+                y1 += dy;
+                if (y1 < screenInsets.top + controlFrameDimension.height)
+                    y1 = screenInsets.top + controlFrameDimension.height;
+                if (y1 > screenDimension.height - screenInsets.bottom - h1)
+                    y1 = screenDimension.height - screenInsets.bottom - h1;
 
-		tempFrame.setLocation(x1, y1);
-	    }
-	}
+                if ((dx != 0 || dy != 0) && x1 == ox1 && y1 == oy1) {
+                    x1 += Math.random() > 0.5 ? -1 : 1;
+                    y1 += Math.random() > 0.5 ? -1 : 1;
+                    if (x1 < screenInsets.left) x1 = screenInsets.left;
+                    if (x1 > screenDimension.width - screenInsets.right - w1)
+                        x1 = screenDimension.width - screenInsets.right - w1;
+                    if (y1 < screenInsets.top + controlFrameDimension.height)
+                        y1 = screenInsets.top + controlFrameDimension.height;
+                    if (y1 > screenDimension.height - screenInsets.bottom - h1)
+                        y1 = screenDimension.height - screenInsets.bottom - h1;
+                }
 
-	if ((double) totalFrameArea > 0.6 * (double) totalScreenArea) {
-	    targetFrameSize *= 0.95;
-	    for (int i = 0; i < numberOfFrames; i ++)
-		frames.get(i).rescale(targetFrameSize);
-	}
-	else if ((double) totalFrameArea < 0.4 * (double) totalScreenArea) {
-	    targetFrameSize *= 1.05;
- 	    if (targetFrameSize > screenDimension.height) targetFrameSize = screenDimension.height;
-	    for (int i = 0; i < numberOfFrames; i ++)
-		frames.get(i).rescale(targetFrameSize);
-	}
+                tempFrame.setLocation(x1, y1);
+            }
+        }
+
+        if ((double) totalFrameArea > 0.6 * (double) totalScreenArea) {
+            targetFrameSize *= 0.95;
+            for (int i = 0; i < numberOfFrames; i++)
+                frames.get(i).rescale(targetFrameSize);
+        } else if ((double) totalFrameArea < 0.4 * (double) totalScreenArea) {
+            targetFrameSize *= 1.05;
+            if (targetFrameSize > screenDimension.height) targetFrameSize = screenDimension.height;
+            for (int i = 0; i < numberOfFrames; i++)
+                frames.get(i).rescale(targetFrameSize);
+        }
     }
 
     public void closeApplet() {
-	for (int i = 0; i < numberOfFrames; i ++) {
-	    frames.get(i).dispose();
-	    frames.set(i, null);
-	}
-	frames.clear();
-	for (int i = 0; i < recipeFrames.size(); i ++) {
-	    recipeFrames.get(i).dispose();
-	    recipeFrames.set(i, null);
-	}
-	recipeFrames.clear();
-	controlFrame.dispose();
-	applicationRunning = false;
-	System.gc();
+        for (int i = 0; i < numberOfFrames; i++) {
+            frames.get(i).dispose();
+            frames.set(i, null);
+        }
+        frames.clear();
+        for (int i = 0; i < recipeFrames.size(); i++) {
+            recipeFrames.get(i).dispose();
+            recipeFrames.set(i, null);
+        }
+        recipeFrames.clear();
+        controlFrame.dispose();
+        applicationRunning = false;
+        System.gc();
     }
 
     public void constructControlFrame() {
-	controlFrame = new JFrame("Swarm Chemistry Simulator");
-	controlFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-	controlFrame.setVisible(true);
-	controlFrame.setBackground(Color.white);
-	controlFrame.addWindowListener(new WindowAdapter() {
-		public void windowClosing(WindowEvent e) {
-		    if (thisIsApplet) closeApplet();
-		    else System.exit(0);
-		}
-	    });
+        controlFrame = new JFrame("Swarm Chemistry Simulator");
+        controlFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        controlFrame.setVisible(true);
+        controlFrame.setBackground(Color.white);
+        controlFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                if (thisIsApplet) closeApplet();
+                else System.exit(0);
+            }
+        });
 
- 	Font font = new Font("dialog", Font.BOLD, 16);
-	UIManager.put("Button.font", font);
+        Font font = new Font("dialog", Font.BOLD, 16);
+        UIManager.put("Button.font", font);
 
-	controlFrame.setLayout(new FlowLayout());
-	controlFrame.getContentPane().add(tracking = new JCheckBox("Automatic zoom", false));
-	controlFrame.getContentPane().add(pausing = new JCheckBox("Pause", false));
-	controlFrame.getContentPane().add(mouseEffect = new JCheckBox("Interaction w. mouse cursor", false));
-	controlFrame.getContentPane().add(undoing = new JButton("Undo selection"));
-	undoing.addActionListener(this);
-	controlFrame.getContentPane().add(randomAdding = new JButton("Add a random swarm"));
-	randomAdding.addActionListener(this);
-	controlFrame.getContentPane().add(showing = new JButton("Bring all windows to front"));
-	showing.addActionListener(this);
-	controlFrame.getContentPane().add(quitting = new JButton("Quit"));
-	quitting.addActionListener(this);
+        controlFrame.setLayout(new FlowLayout());
+        controlFrame.getContentPane().add(tracking = new JCheckBox("Automatic zoom", false));
+        controlFrame.getContentPane().add(pausing = new JCheckBox("Pause", false));
+        controlFrame.getContentPane().add(mouseEffect = new JCheckBox("Interaction w. mouse cursor", false));
+        controlFrame.getContentPane().add(undoing = new JButton("Undo selection"));
+        undoing.addActionListener(this);
+        controlFrame.getContentPane().add(randomAdding = new JButton("Add a random swarm"));
+        randomAdding.addActionListener(this);
+        controlFrame.getContentPane().add(showing = new JButton("Bring all windows to front"));
+        showing.addActionListener(this);
+        controlFrame.getContentPane().add(quitting = new JButton("Quit"));
+        quitting.addActionListener(this);
 
-	screenDimension = controlFrame.getToolkit().getScreenSize();
-	targetFrameSize = screenDimension.width / 5;
-	screenInsets = controlFrame.getToolkit().getScreenInsets(controlFrame.getGraphicsConfiguration());
-	controlFrameInsets = controlFrame.getInsets();
-	controlFrame.setSize(screenDimension.width, 40 + controlFrameInsets.top + controlFrameInsets.bottom);
-	controlFrame.setLocation(0, screenInsets.top);
-	controlFrame.setVisible(true);
-	controlFrameDimension = controlFrame.getSize();
-	totalScreenArea = (screenDimension.width - screenInsets.left - screenInsets.right) * (screenDimension.height - screenInsets.top - screenInsets.bottom) - controlFrameDimension.width * controlFrameDimension.height;
+        screenDimension = controlFrame.getToolkit().getScreenSize();
+        targetFrameSize = screenDimension.width / 5;
+        screenInsets = controlFrame.getToolkit().getScreenInsets(controlFrame.getGraphicsConfiguration());
+        controlFrameInsets = controlFrame.getInsets();
+        controlFrame.setSize(screenDimension.width, 40 + controlFrameInsets.top + controlFrameInsets.bottom);
+        controlFrame.setLocation(0, screenInsets.top);
+        controlFrame.setVisible(true);
+        controlFrameDimension = controlFrame.getSize();
+        totalScreenArea = (screenDimension.width - screenInsets.left - screenInsets.right) * (screenDimension.height - screenInsets.top - screenInsets.bottom) - controlFrameDimension.width * controlFrameDimension.height;
     }
 
     public void addFrame(SwarmPopulation pop, int x, int y) {
 
-	numberOfFrames ++;
+        numberOfFrames++;
 
-	populations.add(pop);
+        populations.add(pop);
 
-	SwarmPopulationSimulator tempFrame = new SwarmPopulationSimulator(targetFrameSize, initialSpaceSize, pop, populations, ++ uniqueFrameID, tracking, mouseEffect, recipeFrames);
-	tempFrame.setLocation(x, y);
-	frames.add(tempFrame);
+        SwarmPopulationSimulator tempFrame = new SwarmPopulationSimulator(targetFrameSize, initialSpaceSize, pop, populations, ++uniqueFrameID, tracking, mouseEffect, recipeFrames);
+        tempFrame.setLocation(x, y);
+        frames.add(tempFrame);
     }
 
 
     public void initializePopulations(int num) {
-	SwarmPopulation tempPopulation;
+        SwarmPopulation tempPopulation;
 
-	populations = new ArrayList<SwarmPopulation>();
-	frames = new ArrayList<SwarmPopulationSimulator>();
+        populations = new ArrayList<SwarmPopulation>();
+        frames = new ArrayList<SwarmPopulationSimulator>();
 
-	for (int i = 0; i < num; i ++) {
+        for (int i = 0; i < num; i++) {
 
-	    if (givenWithSpecificRecipe) {
-		givenWithSpecificRecipe = false;
-		tempPopulation = new SwarmPopulation((new Recipe(givenRecipeText)).createPopulation(initialSpaceSize, initialSpaceSize), "Created from a given recipe");
-	    }
-	    else {
-		tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
-	    }
+            if (givenWithSpecificRecipe) {
+                givenWithSpecificRecipe = false;
+                tempPopulation = new SwarmPopulation((new Recipe(givenRecipeText)).createPopulation(initialSpaceSize, initialSpaceSize), "Created from a given recipe");
+            } else {
+                tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
+            }
 
-	    addFrame(tempPopulation, 
-		     (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
-		     (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
-	}
+            addFrame(tempPopulation,
+                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
+                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
+        }
     }
 
+    /*
+     * The implementation method of EventListener interface.
+     * This method is called when an action happened.
+     *
+     * @param e an action event when a user clicked on a window
+     */
     public void actionPerformed(ActionEvent e) {
-    // The implementation method of EventListener interface.
-    // This method is called when an action happened.
         Object src = e.getSource();
 
-	if (src == undoing) {
-	    for (int i = 0; i < numberOfFrames; i ++)
-		frames.get(i).isSelected = false;
-	}
+        if (src == undoing) {
+            for (int i = 0; i < numberOfFrames; i++)
+                frames.get(i).isSelected = false;
+        } else if (src == randomAdding) {
+            randomAdditionRequest = true;
+        } else if (src == showing) {
+            SwarmPopulationSimulator tempFrame;
+            for (int i = 0; i < numberOfFrames; i++) {
+                tempFrame = frames.get(i);
+                if (tempFrame.isDisplayable()) {
+                    tempFrame.setState(JFrame.NORMAL);
+                    tempFrame.toFront();
+                }
+            }
 
-	else if (src == randomAdding) {
-	    randomAdditionRequest = true;
-	}
-
-	else if (src == showing) {
-	    SwarmPopulationSimulator tempFrame;
-	    for (int i = 0; i < numberOfFrames; i ++) {
-		tempFrame = frames.get(i);
-		if (tempFrame.isDisplayable()) {
-		    tempFrame.setState(JFrame.NORMAL);
-		    tempFrame.toFront();
-		}
-	    }
-
-	    RecipeFrame rcf;
-	    for (int i = 0; i < recipeFrames.size(); i ++) {
-		rcf = recipeFrames.get(i);
-		rcf.setState(JFrame.NORMAL);
-		rcf.toFront();
-	    }
-	    controlFrame.toFront();
-	}
-
-	else if (src == quitting) {
-	    if (thisIsApplet) closeApplet();
-	    else System.exit(0);
-	}
+            RecipeFrame rcf;
+            for (int i = 0; i < recipeFrames.size(); i++) {
+                rcf = recipeFrames.get(i);
+                rcf.setState(JFrame.NORMAL);
+                rcf.toFront();
+            }
+            controlFrame.toFront();
+        } else if (src == quitting) {
+            if (thisIsApplet) closeApplet();
+            else System.exit(0);
+        }
     }
 }
