@@ -251,9 +251,19 @@ public class SwarmChemistryEnvironment implements ActionListener {
         if (randomAdditionRequest) {
             randomAdditionRequest = false;
             tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
-            addFrame(tempPopulation,
-                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
-                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
+            int x = (int) Math.round(Math.random()
+                    * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left)
+                    + screenInsets.left);
+            int y = (int) Math.round(Math.random()
+                    * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height)
+                    + screenInsets.top + controlFrameDimension.height);
+
+            System.out.println(x);
+            System.out.println(y);
+
+            addFrame(tempPopulation, x, y);
+//                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
+//                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
         }
 
         if (replicationRequest) {
@@ -477,9 +487,22 @@ public class SwarmChemistryEnvironment implements ActionListener {
                 tempPopulation = new SwarmPopulation((int) (Math.random() * SwarmParameters.numberOfIndividualsMax) + 1, initialSpaceSize, initialSpaceSize, "Randomly generated");
             }
 
-            addFrame(tempPopulation,
-                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
-                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
+
+            int x = (int) Math.round(Math.random()
+                    * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left)
+                    + screenInsets.left);
+            int y = (int) Math.round(Math.random()
+                    * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height)
+                    + screenInsets.top + controlFrameDimension.height);
+
+            System.out.println(x);
+            System.out.println(y);
+
+            addFrame(tempPopulation, x, y);
+
+//            addFrame(tempPopulation,
+//                    (int) Math.round(Math.random() * (screenDimension.width - screenInsets.right - targetFrameSize - screenInsets.left) + screenInsets.left),
+//                    (int) Math.round(Math.random() * (screenDimension.height - screenInsets.bottom - targetFrameSize - screenInsets.top - controlFrameDimension.height) + screenInsets.top + controlFrameDimension.height));
         }
     }
 
