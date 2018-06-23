@@ -21,31 +21,37 @@ import java.applet.Applet;
 
 public class SwarmChemistry extends Applet {
 
+    /*
+     * An applet does not need a main function.
+     * Because browser or applet viewer has started already.
+     */
     public static void main(String args[]) {
-    // An applet does not need a main function because browser or applet viewer has started already.
-	boolean recipeIsGiven = false;
-	int n = 6;
-	SwarmChemistryEnvironment master;
+        // An applet does not need a main function because browser or applet viewer has started already.
+        boolean recipeIsGiven = false;
+        int n = 6;
+        SwarmChemistryEnvironment master;
 
-	if (args.length > 0) {
-	    try {
-		n = Integer.parseInt(args[0]);
-	    }
-	    catch(NumberFormatException e) {
-		n = 1;
-		recipeIsGiven = true;
-	    }
-	    if (n < 1) n = 1;
-	}
+        if (args.length > 0) {
+            try {
+                n = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                n = 1;
+                recipeIsGiven = true;
+            }
+            if (n < 1) n = 1;
+        }
 
-	if (recipeIsGiven)
-	    master = new SwarmChemistryEnvironment(false, args[0]);
-	else
-	    master = new SwarmChemistryEnvironment(false, n);
+        if (recipeIsGiven)
+            master = new SwarmChemistryEnvironment(false, args[0]);
+        else
+            master = new SwarmChemistryEnvironment(false, n);
     }
 
+    /*
+     * This method is called once by browser or applet viewer
+     * when the applet has been loaded into the system.
+     */
     public void init() {
-    // This method is called once by browser or applet viewer when the applet has been loaded into the system. 
-	SwarmChemistryEnvironment master = new SwarmChemistryEnvironment(true, 6);
+        SwarmChemistryEnvironment master = new SwarmChemistryEnvironment(true, 6);
     }
 }

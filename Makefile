@@ -5,9 +5,6 @@ MAIN=SwarmChemistry
 
 n=1
 
-act:
-	echo argument is $(a)
-
 build: $(MAIN_SRC)
 	javac $(MAIN_SRC)
 
